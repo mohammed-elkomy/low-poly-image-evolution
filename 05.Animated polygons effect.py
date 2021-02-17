@@ -1,5 +1,6 @@
 import os
 import pickle
+from functools import partial
 from multiprocessing import Pool
 from random import randrange
 
@@ -107,6 +108,26 @@ def shifted_draw(draw_objects, path_shift, canvas_shape, ):
     return image
 
 
+# the worker for multi-processing, every worker is responsible for drawing the image for a certain animation step
+def worker(step, draw_objects, draw_objects_shift_layers, canvas_shape, video_frames_dist
+           ):
+    """
+    draws the image for a given animation step, and saves it to the disk
+    ################################### SHARED ACROSS PROCESSES ##########################
+    # that's why I will use partial to set them before sending them to the pool
+    #####################################################################################
+    :param video_frames_dist: destination path for video frames
+    :param canvas_shape:  the size of the canvas
+    :param draw_objects_shift_layers: the shift for each polygon for a given step in time
+    :param draw_objects: the polygons to draw
+    #####################################################################################
+    :param step: the animation step
+    """
+    image = shifted_draw(draw_objects, draw_objects_shift_layers[..., step], canvas_shape)
+
+    cv2.imwrite(os.path.join(video_frames_dist, "{:05d}.png".format(step)), image)
+
+
 def render_video_frames(video_frames_dist, source_draw_objects_dict):
     with open(source_draw_objects_dict, 'rb') as f:
         draw_objects = pickle.load(f)
@@ -134,18 +155,12 @@ def render_video_frames(video_frames_dist, source_draw_objects_dict):
             draw_objects_shift_layers[layer::LAYERS, :, shift:shift + ANIMATION_STEPS] = draw_objects_shift[layer::LAYERS]
             draw_objects_shift_layers[layer::LAYERS, :, shift + ANIMATION_STEPS:] = 0
 
-        # the worker for multi-processing, every worker is responsible for drawing the image for a certain animation step
-        def worker(step):
-            """
-            draws the image for a given animation step, and saves it to the disk
-            :param step: the animation step
-            """
-            image = shifted_draw(draw_objects, draw_objects_shift_layers[..., step], canvas_shape)
-
-            cv2.imwrite(os.path.join(video_frames_dist, "{:05d}.png".format(step)), image)
-
+        shared_worker = partial(worker, draw_objects=draw_objects,
+                                draw_objects_shift_layers=draw_objects_shift_layers,
+                                canvas_shape=canvas_shape,
+                                video_frames_dist=video_frames_dist)
         with Pool(10) as p:
-            for _ in tqdm(p.imap_unordered(worker, range(total_animation_steps)), total=total_animation_steps):
+            for _ in tqdm(p.imap_unordered(shared_worker, range(total_animation_steps)), total=total_animation_steps):
                 pass
 
 
