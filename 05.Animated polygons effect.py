@@ -159,6 +159,7 @@ def render_video_frames(video_frames_dist, source_draw_objects_dict):
                                 draw_objects_shift_layers=draw_objects_shift_layers,
                                 canvas_shape=canvas_shape,
                                 video_frames_dist=video_frames_dist)
+
         with Pool(10) as p:
             for _ in tqdm(p.imap_unordered(shared_worker, range(total_animation_steps)), total=total_animation_steps):
                 pass
