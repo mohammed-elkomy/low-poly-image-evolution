@@ -55,5 +55,5 @@ def drop_frames_exponentially(source_root, dist_root):
 
 
 ########## UNCOMMENT THIS TO drop_frames_exponentially
-drop_frames_exponentially(source_root="generated_images/",  # #  source_root = "demos/animate polygons"
-                          dist_root="demos/temp")
+drop_frames_exponentially(source_root="demos/temp",  # #  source_root = "demos/animate polygons"
+                          dist_root="demos/animate polygons")

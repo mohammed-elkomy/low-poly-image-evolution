@@ -2,4 +2,4 @@
 ############################## Generate gif demo ####################################
 #####################################################################################
 # check https://gif.ski/
-gifski -o file.gif *.png --fps 5 in the generated images folder
+gifski -o file.gif *.png --fps 5 # in the generated images folder

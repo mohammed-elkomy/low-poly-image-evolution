@@ -64,4 +64,4 @@ def generate_svg(root_image_path, svg_save_path):
         renderPDF.drawToFile(drawing, svg_save_path)
 
 
-generate_svg(root_image_path="demos/animate polygons", svg_save_path="demos/svg lisa.pdf")
+generate_svg(root_image_path="demos", svg_save_path="demos/svg lisa.pdf")

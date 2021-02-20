@@ -93,7 +93,7 @@ class LowPolyOptimizer:
     @staticmethod
     def encode(polygons, colors):
         """
-        to encode polygons and colors into SFS state vector (squashing into a big vector)
+        to encode polygons and colors into a state vector (squashing into a big vector)
         :param polygons: numpy (NUM_OF_POLY, POINTS_PER_POLYGON, DIMENSIONS,), the polygons to draw
         :param colors: the color of every polygon (overlaid using Alpha channel)
         :return: state vector for the optimizer
@@ -304,7 +304,7 @@ if __name__ == "__main__":
     # async mp + sharing: https://stackoverflow.com/questions/7894791/use-numpy-array-in-shared-memory-for-multiprocessing/
     with closing(mp.Pool(processes=DIVISIONS_VER * DIVISIONS_HOR, initializer=init, initargs=(live_demo_shared_canvas, hidden_shared_canvas))) as p:
         # many processes access different slices of the same array
-        results = p.map_async(worker, params)
+        results = p.map_async(worker, params[5:6])
 
     time.sleep(5)
     idx = 0
